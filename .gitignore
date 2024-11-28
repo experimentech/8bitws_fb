@@ -1,0 +1,26 @@
+# Ignore generated files
+*.log
+*.out
+*.jou
+*.vcd
+
+# Ignore temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# Ignore build directories
+/build/
+/dist/
+/out/
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+*.code-workspace
+
+# Ignore OS specific files
+.DS_Store
+Thumbs.db
