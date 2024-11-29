@@ -12,15 +12,19 @@ module voxel_engine(
   // Voxel array (3D array of 1-bit voxels)
   reg [0:0] voxels[7:0][7:0][7:0];  // Explicitly declare 1-bit width
 
-  // Initialize voxel array with a simple pattern
-  integer x, y, z;  // Declare loop indices outside procedural blocks
+  // Declare loop indices and temporary variable outside procedural blocks
+  integer x, y, z;
+  reg [4:0] sum;  // 5-bit register to hold the sum (max value 21)
 
+  // Initialize voxel array with a simple pattern
   initial begin
     for (x = 0; x < 8; x = x + 1) begin
       for (y = 0; y < 8; y = y + 1) begin
         for (z = 0; z < 8; z = z + 1) begin
-          // Extract LSB to get a 1-bit value
-          voxels[x][y][z] = (x + y + z)[0];
+          // Calculate the sum and assign to the temporary variable
+          sum = x + y + z;
+          // Extract LSB from the sum and assign to the voxel array
+          voxels[x][y][z] = sum[0];
         end
       end
     end
