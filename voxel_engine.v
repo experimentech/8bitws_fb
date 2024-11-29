@@ -10,25 +10,21 @@ module voxel_engine(
 );
 
   // Voxel array (3D array of 1-bit voxels)
-  reg [7:0][7:0][7:0] voxels;
+  reg [0:0] voxels[7:0][7:0][7:0];  // Explicitly declare 1-bit width
 
   // Initialize voxel array with a simple pattern
+  integer x, y, z;  // Moved declaration outside of initial block
+
   initial begin
-    integer x, y, z;
     for (x = 0; x < 8; x = x + 1) begin
       for (y = 0; y < 8; y = y + 1) begin
         for (z = 0; z < 8; z = z + 1) begin
-          // Use bitwise AND to get a 1-bit result
-          voxels[x][y][z] = (x + y + z) & 1'b1;
-          // Alternatively, use comparison:
-          // voxels[x][y][z] = ((x + y + z) % 2) != 0;
+          // Extract LSB to get a 1-bit result
+          voxels[x][y][z] = (x + y + z)[0];
         end
       end
     end
   end
-
-  // Declare loop indices outside always block for synthesis
-  integer x, y, z;
 
   // Simple projection algorithm
   always @(posedge clk or posedge reset) begin
@@ -41,9 +37,9 @@ module voxel_engine(
     end else if (display_on) begin
       if (voxels[x][y][z]) begin
         // Simple orthographic projection
-        addr <= {y[3:0], x[3:0], 4'b0}; // Ensure addr is 12 bits
+        addr <= {y[3:0], x[3:0], 4'b0};  // Ensure addr is 12 bits
         we <= 1;
-        ram_d <= 8'b11111111; // White voxel
+        ram_d <= 8'b11111111;  // White voxel
       end else begin
         we <= 0;
       end
@@ -53,11 +49,11 @@ module voxel_engine(
       end else begin
         z <= 0;
         if (y < 7) begin
-          y <= 0 + 1;
+          y <= y + 1;
         end else begin
           y <= 0;
           if (x < 7) begin
-            x <= 0 + 1;
+            x <= x + 1;
           end else begin
             x <= 0;
           end
