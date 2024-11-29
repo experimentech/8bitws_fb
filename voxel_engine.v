@@ -13,14 +13,14 @@ module voxel_engine(
   reg [0:0] voxels[7:0][7:0][7:0];  // Explicitly declare 1-bit width
 
   // Initialize voxel array with a simple pattern
-  integer x, y, z;  // Moved declaration outside of initial block
+  integer x, y, z;  // Declare loop indices outside procedural blocks
 
   initial begin
     for (x = 0; x < 8; x = x + 1) begin
       for (y = 0; y < 8; y = y + 1) begin
         for (z = 0; z < 8; z = z + 1) begin
-          // Extract LSB to get a 1-bit result
-          voxels[x][y][z] = (x + y + z) & 1'b1;
+          // Extract LSB to get a 1-bit value
+          voxels[x][y][z] = (x + y + z)[0];
         end
       end
     end
