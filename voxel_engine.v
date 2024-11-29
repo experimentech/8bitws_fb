@@ -22,7 +22,7 @@ module voxel_engine(
       for (y = 0; y < 8; y = y + 1) begin
         for (z = 0; z < 8; z = z + 1) begin
           // Calculate the sum and assign to the temporary variable
-          sum = x + y + z;
+          sum = x[4:0] + y[4:0] + z[4:0];
           // Extract LSB from the sum and assign to the voxel array
           voxels[x][y][z] = sum[0];
         end
