@@ -18,12 +18,16 @@ module voxel_engine(
     for (x = 0; x < 8; x = x + 1) begin
       for (y = 0; y < 8; y = y + 1) begin
         for (z = 0; z < 8; z = z + 1) begin
-          voxels[x][y][z] = (x + y + z) % 2; // Simple checkerboard pattern
+          // Use bitwise AND to get a 1-bit result
+          voxels[x][y][z] = (x + y + z) & 1'b1;
+          // Alternatively, use comparison:
+          // voxels[x][y][z] = ((x + y + z) % 2) != 0;
         end
       end
     end
   end
 
+  // Declare loop indices outside always block for synthesis
   integer x, y, z;
 
   // Simple projection algorithm
@@ -49,7 +53,7 @@ module voxel_engine(
       end else begin
         z <= 0;
         if (y < 7) begin
-          y <= y + 1;
+          y <= 0 + 1;
         end else begin
           y <= 0;
           if (x < 7) begin
