@@ -32,11 +32,11 @@ module voxel_engine(
     end else if (display_on) begin
       integer x, y, z;
       for (x = 0; x < 8; x = x + 1) begin
-        for (y = 0; y < 8; y = y + 1) begin
+        for (y = 0; x < 8; y = y + 1) begin
           for (z = 0; z < 8; z = z + 1) begin
             if (voxels[x][y][z]) begin
               // Simple orthographic projection
-              addr <= {y[3:0], x[3:0]};
+              addr <= {y[3:0], x[3:0]}; // Ensure addr is 12 bits
               we <= 1;
               ram_d <= 8'b11111111; // White voxel
             end
