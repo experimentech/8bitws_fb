@@ -32,66 +32,48 @@ module test_hvsync_top(clk, reset, hsync, vsync, rgb);
   parameter RAM_DATA_WIDTH = 8;  // Data width for the RAM
 
   reg we;  // Write enable signal
-  reg [RAM_DATA_WIDTH-1:0] ram_d;  // Data to be written to RAM
-  wire [RAM_DATA_WIDTH-1:0] ram_q;  // Data read from RAM
-  wire [RAM_ADDR_WIDTH-1:0] ram_addr = {vpos[6:0], hpos[4:0]}; // Combine vpos and hpos for 12-bit address
+  reg [RAM_ADDR_WIDTH-1:0] addr;  // Address signal for RAM
+  wire [RAM_DATA_WIDTH-1:0] data; // Data signal for RAM
 
-  // RAM instance
+  // Instantiate the RAM module
   RAM_async_tristate #(
     .A(RAM_ADDR_WIDTH),
     .D(RAM_DATA_WIDTH)
   ) ram (
     .clk(clk),
-    .addr(ram_addr),
-    .data(ram_q),
-    .we(we)
+    .we(we),
+    .addr(addr),
+    .data(data)
   );
 
-  // Write operation
-  always @(posedge clk) begin
-    if (we) begin
-      ram.mem[ram_addr] <= ram_d;
+  // RGB output logic
+  reg [2:0] rgb_reg;
+  assign rgb = rgb_reg;
+
+  always @(posedge clk or posedge reset) begin
+    if (reset) begin
+      // Reset logic
+      addr <= 0;
+      we <= 0;
+      rgb_reg <= 3'b000;
+    end else begin
+      // Test pattern generation logic
+      if (display_on) begin
+        addr <= {vpos[7:0], hpos[7:0]}[RAM_ADDR_WIDTH-1:0]; // Truncate to 12 bits
+        we <= 0; // Read mode
+        rgb_reg <= data[2:0]; // Example RGB assignment
+      end else begin
+        rgb_reg <= 3'b000; // Black when display is off
+      end
     end
   end
 
-  // Read operation
-  assign ram_q = ram.mem[ram_addr];
-
-/*  
-    // Initialize RAM with a test pattern
-  integer i;
+  // Example initialization of RAM with a test pattern
   initial begin
-    we = 1'b1;
+    integer i;
     for (i = 0; i < (1 << RAM_ADDR_WIDTH); i = i + 1) begin
-      if (i[3:0] == 4'b0000) // Example pattern: set every 16th byte
-        ram_d = 8'hFF;       // White pixel
-      else if (i[3:0] == 4'b1000)
-        ram_d = 8'h00;       // Black pixel
-      else
-        ram_d = 8'hAA;       // Alternate pattern
-      @(posedge clk);  // Ensure synchronization with the clock
+      ram.mem[i] = i[RAM_DATA_WIDTH-1:0]; // Example pattern
     end
-    we = 1'b0;
   end
-*/
-  // Initialize RAM with a test pattern
-  integer i;  // Declaration of integer i should be outside procedural block
-  initial begin
-    we = 1'b1;
-    for (i = 0; i < (1 << RAM_ADDR_WIDTH); i = i + 1) begin
-      ram_d = i[7:0];  // Just an example, storing i's lower byte
-    end
-    we = 1'b0;
-  end
-
-  // Generate the RGB output based on RAM data
-  wire r = display_on & ram_q[0];
-  wire g = display_on & ram_q[1];
-  wire b = display_on & ram_q[2];
-
-  // Concatenation operator merges the red, green, and blue signals
-  // into a single 3-bit vector, which is assigned to the 'rgb'
-  // output. The IDE expects this value in BGR order.
-  assign rgb = {b, g, r};
 
 endmodule
