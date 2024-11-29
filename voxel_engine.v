@@ -20,7 +20,7 @@ module voxel_engine(
       for (y = 0; y < 8; y = y + 1) begin
         for (z = 0; z < 8; z = z + 1) begin
           // Extract LSB to get a 1-bit result
-          voxels[x][y][z] = (x + y + z)[0];
+          voxels[x][y][z] = (x + y + z) & 1'b1;
         end
       end
     end
