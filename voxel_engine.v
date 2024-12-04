@@ -14,17 +14,14 @@ module voxel_engine(
 
   // Declare loop indices and temporary variable outside procedural blocks
   integer x, y, z;
-  reg [4:0] sum;  // 5-bit register to hold the sum (max value 21)
 
-  // Initialize voxel array with a simple pattern
+  // Initialize voxel array with a 3D checkerboard pattern
   initial begin
     for (x = 0; x < 8; x = x + 1) begin
       for (y = 0; y < 8; y = y + 1) begin
         for (z = 0; z < 8; z = z + 1) begin
-          // Calculate the sum and assign to the temporary variable
-          sum = x[4:0] + y[4:0] + z[4:0];
-          // Extract LSB from the sum and assign to the voxel array
-          voxels[x][y][z] = sum[0];
+          // Create a 3D checkerboard pattern with bit-width adjustment
+          voxels[x][y][z] = {(x + y + z) % 2}[0:0] ? 1'b1 : 1'b0;
         end
       end
     end
